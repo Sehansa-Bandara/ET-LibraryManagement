@@ -6,6 +6,7 @@ import { BookSearchBar } from '../components/books/BookSearchBar';
 import { BookFilters } from '../components/books/BookFilters';
 import { Pagination } from '../components/common/Pagination';
 import { BookOpen, SearchX, Sparkles } from 'lucide-react';
+import { apiRequest } from '../lib/api';
 
 export const Catalog = () => {
   const { books } = useLibrary();
@@ -122,6 +123,16 @@ export const Catalog = () => {
         return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
       });
   }, [books, searchTerm, selectedCategory, availability, sortBy]);
+
+  // Log a settled search once. These anonymised records power the acquisition advisor.
+  useEffect(() => {
+    const query = searchTerm.trim();
+    if (query.length < 2) return undefined;
+    const timer = window.setTimeout(() => {
+      apiRequest('/search-logs', { method: 'POST', body: { query, resultCount: filteredBooks.length } }).catch(() => {});
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [searchTerm, filteredBooks.length]);
 
   // Pagination slice
   const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);

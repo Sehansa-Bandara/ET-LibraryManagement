@@ -30,7 +30,7 @@ import {
 } from 'recharts';
 
 export const AdminDashboard = () => {
-  const { books, borrowings, members, approveBorrow, rejectBorrow } = useLibrary();
+  const { books, borrowings, members, demandPredictions, acquisitionAdvice, approveBorrow, rejectBorrow } = useLibrary();
 
   // Metrics
   const totalBooks = books.length;
@@ -132,6 +132,16 @@ export const AdminDashboard = () => {
           color="amber"
         />
       </div>
+
+      <section className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-4"><TrendingUp className="w-5 h-5 text-brand-600" /><div><h3 className="font-black text-navy-950">ML Demand Forecast</h3><p className="text-xs text-slate-500">Random Forest prediction from historical borrowing records.</p></div></div>
+        {demandPredictions.length ? <div className="grid sm:grid-cols-3 gap-3">{demandPredictions.slice(0, 3).map((item) => <div key={item.bookId} className="rounded-xl bg-slate-50 border border-slate-100 p-3"><p className="text-xs font-bold text-navy-900 truncate">{item.title}</p><p className="text-brand-600 font-black text-lg mt-1">{item.predictedMonthlyBorrowings}<span className="text-xs font-medium text-slate-500"> loans/month</span></p><p className="text-[11px] text-slate-500">{item.demandLevel} demand · {item.model}</p></div>)}</div> : <p className="text-sm text-slate-500">Add books and borrowing records to generate demand predictions.</p>}
+      </section>
+
+      <section className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-4"><Sparkles className="w-5 h-5 text-brand-600" /><div><h3 className="font-black text-navy-950">Smart Book Acquisition Advisor</h3><p className="text-xs text-slate-500">Clusters member searches and combines failed searches, stock, and loan demand.</p></div></div>
+        {acquisitionAdvice.length ? <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{acquisitionAdvice.slice(0, 6).map((item) => <div key={item.topic} className="rounded-xl border border-slate-100 bg-slate-50 p-3"><div className="flex justify-between gap-2"><p className="font-bold text-sm text-navy-900 truncate">{item.topic}</p><span className={`text-[10px] px-2 py-1 rounded-full font-bold ${item.priority === 'High' ? 'bg-rose-100 text-rose-700' : item.priority === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-700'}`}>{item.priority}</span></div><p className="mt-2 text-xs text-slate-600">{item.recommendation}</p><p className="mt-2 text-[11px] text-slate-500">{item.searches} searches · {item.failedSearches} no-result searches · {item.availableCopies} copies available</p></div>)}</div> : <p className="text-sm text-slate-500">Searches from the public catalogue will appear here as purchase suggestions.</p>}
+      </section>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

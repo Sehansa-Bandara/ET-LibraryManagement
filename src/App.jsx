@@ -4,21 +4,11 @@ import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import { LibraryProvider } from './context/LibraryContext';
 
-// Layouts
-import { MainLayout } from './layouts/MainLayout';
+// New Architectural Frontend Portal
+import AuraLibMain from './pages/AuraLibMain';
+
+// Admin Layout & Pages
 import { AdminLayout } from './layouts/AdminLayout';
-
-// Public Pages
-import { Home } from './pages/Home';
-import { Catalog } from './pages/Catalog';
-import { BookDetails } from './pages/BookDetails';
-import { MyBooks } from './pages/MyBooks';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
-import { Recommendations } from './pages/Recommendations';
-import { NotFound } from './pages/NotFound';
-
-// Admin Pages
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { ManageBooks } from './pages/admin/ManageBooks';
 import { ManageMembers } from './pages/admin/ManageMembers';
@@ -36,18 +26,18 @@ function App() {
         <AuthProvider>
           <LibraryProvider>
             <Routes>
-              {/* Public Portal Routes */}
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/catalog" element={<Catalog />} />
-                <Route path="/books/:id" element={<BookDetails />} />
-                <Route path="/recommendations" element={<Recommendations />} />
-                <Route path="/my-books" element={<MyBooks />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              </Route>
+              {/* Public Sanctuary Portal Routes */}
+              <Route path="/" element={<AuraLibMain initialTab="journey" />} />
+              <Route path="/catalog" element={<AuraLibMain initialTab="catalogue" />} />
+              <Route path="/categories" element={<AuraLibMain initialTab="categories" />} />
+              <Route path="/my-books" element={<AuraLibMain initialTab="mylibrary" />} />
+              <Route path="/recommendations" element={<AuraLibMain initialTab="recommendations" />} />
+              <Route path="/about" element={<AuraLibMain initialTab="about" />} />
+              <Route path="/books/:id" element={<AuraLibMain initialTab="catalogue" />} />
+              <Route path="/login" element={<AuraLibMain initialTab="journey" openAuth="signin" />} />
+              <Route path="/register" element={<AuraLibMain initialTab="journey" openAuth="register" />} />
 
-              {/* Admin Portal Routes */}
+              {/* Admin / Librarian Portal Routes */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="books" element={<ManageBooks />} />
@@ -57,8 +47,8 @@ function App() {
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
 
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
+              {/* Catch-all redirect to Home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <FloatingChatbot />
           </LibraryProvider>
