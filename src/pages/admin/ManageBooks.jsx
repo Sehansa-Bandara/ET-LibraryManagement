@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 
 export const ManageBooks = () => {
-  const { books, addBook, updateBook, deleteBook } = useLibrary();
+  const { books, demandPredictions, addBook, updateBook, deleteBook, checkDuplicates } = useLibrary();
+  const demandByBookId = Object.fromEntries(demandPredictions.map((item) => [item.bookId, item]));
 
   // Search & Filter state
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,6 +31,8 @@ export const ManageBooks = () => {
   const [editingBook, setEditingBook] = useState(null);
   const [deletingBookId, setDeletingBookId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [duplicateMatches, setDuplicateMatches] = useState([]);
+  const [allowDuplicate, setAllowDuplicate] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -86,6 +89,8 @@ export const ManageBooks = () => {
       tags: 'General, Education'
     });
     setFormErrors({});
+    setDuplicateMatches([]);
+    setAllowDuplicate(false);
     setIsFormModalOpen(true);
   };
 
@@ -106,6 +111,8 @@ export const ManageBooks = () => {
       tags: Array.isArray(book.tags) ? book.tags.join(', ') : book.tags
     });
     setFormErrors({});
+    setDuplicateMatches([]);
+    setAllowDuplicate(false);
     setIsFormModalOpen(true);
   };
 
@@ -137,6 +144,18 @@ export const ManageBooks = () => {
       tags: String(formData.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean),
     };
     setIsSaving(true);
+    if (!editingBook && !allowDuplicate) {
+      try {
+        const matches = await checkDuplicates(payload);
+        if (matches.length) {
+          setDuplicateMatches(matches);
+          setIsSaving(false);
+          return;
+        }
+      } catch {
+        // The server will still validate the eventual create request.
+      }
+    }
     const result = editingBook
       ? await updateBook(editingBook.id, payload)
       : await addBook(payload);
@@ -214,6 +233,7 @@ export const ManageBooks = () => {
                 <th className="py-3.5 px-4">ISBN</th>
                 <th className="py-3.5 px-4">Rating</th>
                 <th className="py-3.5 px-4">Copies (Avail/Total)</th>
+                <th className="py-3.5 px-4">AI Demand</th>
                 <th className="py-3.5 px-6 text-right">Actions</th>
               </tr>
             </thead>
@@ -250,6 +270,16 @@ export const ManageBooks = () => {
                     >
                       {book.availableCopies} / {book.totalCopies} Available
                     </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    {demandByBookId[book.id] ? (
+                      <div>
+                        <span className={`inline-block px-2 py-1 rounded-full text-[10px] font-bold ${demandByBookId[book.id].demandLevel === 'High' ? 'bg-rose-50 text-rose-700' : demandByBookId[book.id].demandLevel === 'Medium' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
+                          {demandByBookId[book.id].demandLevel} demand
+                        </span>
+                        <p className="text-[10px] text-slate-400 mt-1">{demandByBookId[book.id].predictedMonthlyBorrowings}/month</p>
+                      </div>
+                    ) : <span className="text-slate-400">—</span>}
                   </td>
                   <td className="py-3 px-6 text-right">
                     <div className="flex items-center justify-end gap-1.5">
@@ -305,6 +335,14 @@ export const ManageBooks = () => {
               />
               {formErrors.title && <p className="text-[11px] text-rose-500 mt-1">{formErrors.title}</p>}
             </div>
+
+            {duplicateMatches.length > 0 && (
+              <div className="sm:col-span-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+                <p className="font-bold">Potential duplicate detected</p>
+                <p className="mt-1">Similar catalogue title: {duplicateMatches[0].title} by {duplicateMatches[0].author} ({duplicateMatches[0].similarity}% similar).</p>
+                <button type="button" onClick={() => setAllowDuplicate(true)} className="mt-2 font-bold underline">Keep this as a separate edition and create it anyway</button>
+              </div>
+            )}
 
             <div>
               <label className="text-xs font-bold text-navy-900 block mb-1">Author Name *</label>

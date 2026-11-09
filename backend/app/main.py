@@ -8,8 +8,8 @@ from firebase_admin import firestore
 from .auth import admin_user, current_user
 from .config import ALLOWED_ORIGINS, DEFAULT_BORROW_LIMIT, LOAN_DURATION_DAYS
 from .firebase import ensure_default_admin, get_db
-from .recommendations import recommend
-from .schemas import BookInput, BookUpdate, BorrowRequest, MemberUpdate, RecommendationRequest, RejectRequest
+from .recommendations import acquisition_advice, find_duplicates, predict_demand, recommend
+from .schemas import BookInput, BookUpdate, BorrowRequest, DuplicateCheckRequest, MemberUpdate, RecommendationRequest, RejectRequest, SearchLogInput
 
 app = FastAPI(title="AuraLib API", version="1.0.0", description="Firebase-backed API for the AI Smart Public Library System")
 app.add_middleware(
@@ -116,6 +116,19 @@ def get_book(book_id: str):
     return document_or_404("books", book_id)
 
 
+@app.post("/search-logs", status_code=status.HTTP_201_CREATED)
+def log_search(payload: SearchLogInput):
+    """Anonymous search telemetry used only for acquisition planning."""
+    data = {**payload.model_dump(), "createdAt": firestore.SERVER_TIMESTAMP}
+    get_db().collection("search_logs").document().set(data)
+    return {"recorded": True}
+
+
+@app.post("/admin/books/duplicate-check")
+def duplicate_check(payload: DuplicateCheckRequest, _: dict = Depends(admin_user)):
+    return find_duplicates(payload.model_dump(), all_documents("books"))
+
+
 @app.post("/books", status_code=status.HTTP_201_CREATED)
 def add_book(payload: BookInput, _: dict = Depends(admin_user)):
     data = payload.model_dump()
@@ -216,15 +229,15 @@ def approve_borrow(borrowing_id: str, _: dict = Depends(admin_user)):
     loan_ref = db.collection("borrowings").document(borrowing_id)
     @firestore.transactional
     def approve(transaction):
-        loan = transaction.get(loan_ref)
-        if not loan.exists:
+        loan = next(transaction.get(loan_ref), None)
+        if not loan or not loan.exists:
             raise HTTPException(status_code=404, detail="Borrowing not found")
         loan_data = loan.to_dict()
         if loan_data.get("status") != "pending":
             raise HTTPException(status_code=409, detail="Only pending requests can be approved")
         book_ref = db.collection("books").document(loan_data["bookId"])
-        book = transaction.get(book_ref)
-        if not book.exists or book.to_dict().get("availableCopies", 0) < 1:
+        book = next(transaction.get(book_ref), None)
+        if not book or not book.exists or book.to_dict().get("availableCopies", 0) < 1:
             raise HTTPException(status_code=409, detail="No copy is available for approval")
         today = date.today()
         transaction.update(book_ref, {"availableCopies": firestore.Increment(-1)})
@@ -285,8 +298,20 @@ def renew_borrow(borrowing_id: str, user: dict = Depends(current_user)):
 @app.post("/recommendations")
 def recommendations(payload: RecommendationRequest, user: dict = Depends(current_user)):
     books = all_documents("books")
-    borrowed = [loan["bookId"] for loan in all_documents("borrowings") if loan.get("memberId") == user["uid"] and loan.get("status") in {"approved", "returned", "overdue"}]
-    return recommend(books, payload.interests, borrowed, payload.limit)
+    loans = all_documents("borrowings")
+    return recommend(books, loans, user["uid"], payload.interests, payload.limit)
+
+
+@app.get("/admin/demand-predictions")
+def demand_predictions(_: dict = Depends(admin_user)):
+    """Inventory planning output from the Random Forest demand model."""
+    return predict_demand(all_documents("books"), all_documents("borrowings"))
+
+
+@app.get("/admin/acquisition-advice")
+def get_acquisition_advice(_: dict = Depends(admin_user)):
+    """ML-assisted purchase suggestions from search demand, availability, and loans."""
+    return acquisition_advice(all_documents("search_logs"), all_documents("books"), all_documents("borrowings"))
 
 
 @app.get("/admin/dashboard")

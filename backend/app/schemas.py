@@ -85,3 +85,14 @@ class RejectRequest(BaseModel):
 class RecommendationRequest(BaseModel):
     interests: list[str] = Field(default_factory=list)
     limit: int = Field(default=8, ge=1, le=20)
+
+
+class SearchLogInput(BaseModel):
+    query: str = Field(min_length=2, max_length=120)
+    resultCount: int = Field(ge=0)
+
+
+class DuplicateCheckRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+    author: str = Field(default="", max_length=150)
+    description: str = Field(default="", max_length=4000)

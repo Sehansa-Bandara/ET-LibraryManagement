@@ -9,15 +9,19 @@ const DEFAULT_SETTINGS = { libraryName: 'AuraLib National Smart Library - Colomb
 export const LibraryProvider = ({ children }) => {
   const { user, getToken, isAdmin, loading: authLoading } = useAuth();
   const { showToast } = useToast();
-  const [books, setBooks] = useState([]); const [borrowings, setBorrowings] = useState([]); const [members, setMembers] = useState([]); const [settings, setSettings] = useState(DEFAULT_SETTINGS); const [loading, setLoading] = useState(true);
+  const [books, setBooks] = useState([]); const [borrowings, setBorrowings] = useState([]); const [members, setMembers] = useState([]); const [demandPredictions, setDemandPredictions] = useState([]); const [acquisitionAdvice, setAcquisitionAdvice] = useState([]); const [settings, setSettings] = useState(DEFAULT_SETTINGS); const [loading, setLoading] = useState(true);
   const tokenRequest = useCallback(async (path, options = {}) => apiRequest(path, { ...options, token: await getToken() }), [getToken]);
   const refresh = useCallback(async () => {
     try {
       setBooks(await apiRequest('/books'));
       if (user) {
         const [loans, savedSettings] = await Promise.all([tokenRequest('/borrowings'), tokenRequest('/settings')]);
-        setBorrowings(loans); setSettings(savedSettings); setMembers(isAdmin ? await tokenRequest('/members') : []);
-      } else { setBorrowings([]); setMembers([]); }
+        setBorrowings(loans); setSettings(savedSettings);
+        if (isAdmin) {
+          const [allMembers, demand, advice] = await Promise.all([tokenRequest('/members'), tokenRequest('/admin/demand-predictions'), tokenRequest('/admin/acquisition-advice')]);
+          setMembers(allMembers); setDemandPredictions(demand); setAcquisitionAdvice(advice);
+        } else { setMembers([]); setDemandPredictions([]); setAcquisitionAdvice([]); }
+      } else { setBorrowings([]); setMembers([]); setDemandPredictions([]); setAcquisitionAdvice([]); }
     } catch (error) { showToast(getApiError(error), 'error'); }
     finally { setLoading(false); }
   }, [isAdmin, showToast, tokenRequest, user]);
@@ -36,7 +40,8 @@ export const LibraryProvider = ({ children }) => {
   const deleteMember = (id) => run(() => tokenRequest(`/members/${id}`, { method: 'DELETE' }), 'Member removed.');
   const toggleMemberStatus = (id) => updateMember(id, { status: members.find((item) => item.id === id)?.status === 'Active' ? 'Suspended' : 'Active' });
   const updateSettings = (data) => run(() => tokenRequest('/settings', { method: 'PATCH', body: data }), 'Settings updated.');
+  const checkDuplicates = (data) => tokenRequest('/admin/books/duplicate-check', { method: 'POST', body: { title: data.title, author: data.author, description: data.description } });
   const resetToDefaults = () => updateSettings(DEFAULT_SETTINGS);
-  return <LibraryContext.Provider value={{ books, borrowings, members, settings, loading, refresh, getBookById: (id) => books.find((book) => book.id === id), addBook, updateBook, deleteBook, requestBorrow, approveBorrow, rejectBorrow, returnBook, cancelRequest, renewBook, updateMember, deleteMember, toggleMemberStatus, updateSettings, resetToDefaults }}>{children}</LibraryContext.Provider>;
+  return <LibraryContext.Provider value={{ books, borrowings, members, demandPredictions, acquisitionAdvice, settings, loading, refresh, getBookById: (id) => books.find((book) => book.id === id), addBook, updateBook, deleteBook, requestBorrow, approveBorrow, rejectBorrow, returnBook, cancelRequest, renewBook, updateMember, deleteMember, toggleMemberStatus, updateSettings, checkDuplicates, resetToDefaults }}>{children}</LibraryContext.Provider>;
 };
 export const useLibrary = () => { const context = useContext(LibraryContext); if (!context) throw new Error('useLibrary must be used within a LibraryProvider'); return context; };

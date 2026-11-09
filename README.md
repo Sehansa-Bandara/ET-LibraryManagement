@@ -87,6 +87,10 @@ A full-stack **AI Smart Public Library System** built with React, FastAPI, Fireb
 - **Cloud database**: Cloud Firestore
 - **Backend**: Python FastAPI
 - **AI recommendation**: scikit-learn TF-IDF and cosine similarity
+- **Collaborative recommendation**: item-based filtering from similar members' borrowing histories
+- **Demand prediction**: Random Forest book-demand forecasts for librarians
+- **Acquisition advisor**: K-Means analysis of catalogue-search demand, failed searches, stock, and lending activity
+- **Duplicate detector**: TF-IDF similarity check before a librarian adds a near-duplicate title
 
 ---
 
