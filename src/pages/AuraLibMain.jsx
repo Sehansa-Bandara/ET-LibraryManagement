@@ -2186,7 +2186,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
             {[
               { id: 'journey', path: '/', label: '3D Colonnade', icon: Compass },
               { id: 'catalogue', path: '/catalog', label: 'Explore Books', icon: BookOpen },
-              { id: 'categories', path: '/categories', label: 'Collections', icon: Layers },
+              { id: 'categories', path: '/categories', label: 'Book Categories', icon: Layers },
               {
                 id: 'mylibrary',
                 path: '/my-books',
@@ -2334,7 +2334,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
             {[
               { id: 'journey', path: '/', label: '3D Colonnade Journey' },
               { id: 'catalogue', path: '/catalog', label: 'Explore Books Catalogue' },
-              { id: 'categories', path: '/categories', label: 'Curated Collections' },
+              { id: 'categories', path: '/categories', label: 'Book Categories' },
               {
                 id: 'mylibrary',
                 path: '/my-books',
@@ -2886,7 +2886,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                 AuraLib LK • Integrated Library Management System
               </span>
               <h1 className="font-editorial text-4xl sm:text-5xl font-semibold text-[#231710] mt-1">
-                The Complete Archival Catalogue
+                Browse All Books
               </h1>
             </div>
             <div className="text-xs font-mono-code text-[#6E5A4F]">
@@ -3078,10 +3078,10 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
         <section className="relative z-20 pt-28 pb-24 px-4 sm:px-8 max-w-7xl mx-auto space-y-10 animate-fadeIn">
           <div className="border-b border-[#C5A368]/35 pb-6">
             <span className="font-mono-code text-xs uppercase tracking-widest text-[#9B783E]">
-              Spatial Wings & Epistemic Collections
+              Spatial Wings & Collections
             </span>
             <h1 className="font-editorial text-4xl sm:text-5xl font-semibold text-[#231710] mt-1">
-              Explore by Wing & Discipline
+              Book Categories
             </h1>
           </div>
 
@@ -3583,7 +3583,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
               }}
               className="hover:underline"
             >
-              Collections
+              Book Categories
             </button>
             <button
               onClick={() => {
