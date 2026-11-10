@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation, useParams, Link } from 'react-router-dom';
 import * as THREE from 'three';
+import logoImg from '../assets/logo.jpg';
 import {
   Search,
   BookOpen,
@@ -731,37 +732,15 @@ class LibraryAmbientAudio {
 const ambientAudioInstance = new LibraryAmbientAudio();
 
 // ============================================================================
-// 5. CUSTOM AURALIB LK ARCHITECTURAL LOGO SVG
+// 5. CUSTOM AURALIB LK ARCHITECTURAL LOGO
 // ============================================================================
 export const AuraLibLogo = ({ className = 'w-9 h-9', light = false }) => (
   <div className="flex items-center gap-3 select-none group">
-    <svg
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={`${className} transition-transform duration-500 group-hover:scale-105`}
-    >
-      <path
-        d="M8 40V20C8 11.1634 15.1634 4 24 4C32.8366 4 40 11.1634 40 20V40"
-        stroke="#C5A368"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M24 10L12 38C16.5 34.5 20.5 34 24 36.5C27.5 34 31.5 34.5 36 38L24 10Z"
-        stroke={light ? '#F7F4EE' : '#231710'}
-        strokeWidth="2"
-        strokeLinejoin="round"
-        fill="rgba(197, 163, 104, 0.14)"
-      />
-      <path
-        d="M24 10V36.5M17.5 27H30.5"
-        stroke="#C5A368"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
-      <circle cx="24" cy="40.5" r="1.8" fill="#C5A368" />
-    </svg>
+    <img
+      src={logoImg}
+      alt="AuraLib LK Logo"
+      className={`${className} rounded-xl object-contain shadow-sm border border-[#C5A368]/30 bg-white group-hover:scale-105 transition-transform shrink-0 p-0.5`}
+    />
     <div className="flex flex-col text-left">
       <div className="flex items-baseline gap-1.5">
         <span
@@ -1575,8 +1554,8 @@ const BookDetailModal = ({ book, onClose, onReserveBook, onToggleSaved, isSaved,
               <BookMarked className="w-4 h-4 text-[#C5A368]" />
               {isAvailable
                 ? currentUser
-                  ? 'Reserve Volume for Atrium Pickup'
-                  : 'Sign In to Reserve Volume'
+                  ? 'Reserve Book'
+                  : 'Login to Reserve'
                 : 'Join Priority Waitlist'}
             </button>
 
@@ -1591,12 +1570,12 @@ const BookDetailModal = ({ book, onClose, onReserveBook, onToggleSaved, isSaved,
               {isSaved ? (
                 <>
                   <BookmarkCheck className="w-4 h-4" />
-                  In Reading List
+                  Added to List
                 </>
               ) : (
                 <>
                   <Bookmark className="w-4 h-4" />
-                  Save to List
+                  Add to List
                 </>
               )}
             </button>
@@ -1633,7 +1612,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, pendingActionLabel, initial
       const profile = await login({ email: 'kavindi.perera@auralib.lk', password: 'Scholar@123' });
       onAuthSuccess(profile);
     } catch (err) {
-      setErrorMsg(err.message || 'Demo scholar sign-in failed');
+      setErrorMsg(err.message || 'Member sign-in failed');
     } finally {
       setSubmitting(false);
     }
@@ -1692,12 +1671,21 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, pendingActionLabel, initial
         </button>
 
         <div className="mb-5">
-          <span className="text-xs font-mono-code uppercase tracking-widest text-[#9B783E]">
-            AuraLib LK Member Portal
-          </span>
-          <h3 className="font-editorial text-3xl font-semibold text-[#231710] mt-1">
-            {mode === 'signin' ? 'Scholar Sign In' : 'Apply for Reader Card'}
-          </h3>
+          <div className="flex items-center gap-3.5">
+            <img
+              src={logoImg}
+              alt="AuraLib LK Logo"
+              className="w-12 h-12 rounded-xl object-contain bg-white border border-[#C5A368]/40 shadow-sm p-1 shrink-0"
+            />
+            <div>
+              <span className="text-xs font-mono-code uppercase tracking-widest text-[#9B783E]">
+                AuraLib LK Member Portal
+              </span>
+              <h3 className="font-editorial text-2xl sm:text-3xl font-semibold text-[#231710] mt-0.5">
+                {mode === 'signin' ? 'Member Sign In' : 'Apply for Member Card'}
+              </h3>
+            </div>
+          </div>
           {pendingActionLabel && (
             <p className="mt-2 text-xs px-3 py-2 rounded-lg bg-[#C5A368]/15 border border-[#C5A368]/30 text-[#3A261A]">
               Authentication required to complete: <strong>{pendingActionLabel}</strong>
@@ -1726,7 +1714,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, pendingActionLabel, initial
               onClick={handleDemoScholarLogin}
               className="py-2 px-3 rounded-lg bg-[#C5A368] hover:bg-[#D4B886] text-[#231710] font-semibold text-[11px] uppercase tracking-wider transition-colors text-center disabled:opacity-50"
             >
-              Demo Scholar
+              Member
             </button>
             <button
               type="button"
@@ -1734,7 +1722,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, pendingActionLabel, initial
               onClick={handleDemoAdminLogin}
               className="py-2 px-3 rounded-lg bg-[#234233] hover:bg-[#2d5440] text-[#F7F4EE] font-semibold text-[11px] uppercase tracking-wider transition-colors text-center disabled:opacity-50 border border-[#C5A368]/40"
             >
-              Chief Librarian
+              Library / Admin
             </button>
           </div>
         </div>
@@ -1771,7 +1759,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, pendingActionLabel, initial
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="scholar@auralib.lk"
+              placeholder="member@auralib.lk"
               className="w-full px-3.5 py-2.5 rounded-lg bg-white border border-[#C5A368]/40 text-sm focus:outline-none focus:border-[#231710]"
             />
           </div>
@@ -1813,8 +1801,8 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, pendingActionLabel, initial
             className="text-xs text-[#6E5A4F] hover:text-[#231710] underline"
           >
             {mode === 'signin'
-              ? 'New to AuraLib LK? Register for a Scholar Card'
-              : 'Already hold a Reader Card? Sign In'}
+              ? 'New to AuraLib LK? Register for a Member Card'
+              : 'Already hold a Member Card? Sign In'}
           </button>
         </div>
       </div>
@@ -1992,7 +1980,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
           localStorage.setItem('auralib_saved_books', JSON.stringify(updated));
         } catch (_) {}
         triggerToast(
-          exists ? 'Removed volume from your Reading List' : 'Added volume to your personal Reading List'
+          exists ? 'Removed from your List' : 'Added to List'
         );
         return updated;
       });
@@ -2066,7 +2054,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
   // AI Recommendations Fetcher
   const handleFetchRecommendations = async () => {
     if (!isAuthenticated) {
-      triggerToast('Sign in with a Scholar card to run personalized hybrid recommendations.');
+      triggerToast('Sign in with a Member card to run personalized hybrid recommendations.');
       setAuthMode('signin');
       setAuthModalOpen(true);
       return;
@@ -2207,7 +2195,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                 badge: userBorrowings.length + savedBookIds.length
               },
               { id: 'recommendations', path: '/recommendations', label: 'AI Recommendations', icon: Sparkles },
-              { id: 'about', path: '/about', label: 'Sanctuary Manifesto', icon: Library }
+              { id: 'about', path: '/about', label: 'About Us', icon: Library }
             ].map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -2300,7 +2288,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                   className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#EFECE6] border border-[#C5A368]/50 text-xs font-medium text-[#231710] hover:bg-[#E4DEC8]"
                 >
                   <div className="w-2 h-2 rounded-full bg-[#234233]" />
-                  <span className="hidden sm:inline">{user.name?.split(' ')[0] || 'Scholar'}</span>
+                  <span className="hidden sm:inline">{user.name?.split(' ')[0] || (user.role === 'admin' ? 'Library / Admin' : 'Member')}</span>
                   <span className="font-mono-code text-[10px] text-[#6E5A4F]">
                     {(user.membershipId || user.email || 'AL').slice(-4)}
                   </span>
@@ -2308,7 +2296,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                 <button
                   onClick={async () => {
                     await logout();
-                    triggerToast('Signed out of AuraLib Scholar Account');
+                    triggerToast('Signed out of AuraLib Member Account');
                   }}
                   title="Sign Out"
                   className="p-2 rounded-xl border border-[#C5A368]/40 text-[#6E5A4F] hover:text-[#231710] hover:bg-[#EFECE6]"
@@ -2353,7 +2341,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                 label: `My Library (${userBorrowings.length + savedBookIds.length})`
               },
               { id: 'recommendations', path: '/recommendations', label: 'AI Recommendations' },
-              { id: 'about', path: '/about', label: 'Sanctuary Manifesto' }
+              { id: 'about', path: '/about', label: 'About Us' }
             ].map((item) => (
               <button
                 key={item.id}
@@ -2661,7 +2649,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                 </h2>
                 <p className="text-sm text-[#3A261A] mt-2 leading-relaxed">
                   Our central reading tables pair warm brass banker lamps with natural zenithal
-                  daylight. Preview our Chief Librarian’s monthly monograph selections below.
+                  daylight. Preview our Library / Admin’s monthly monograph selections below.
                 </p>
               </div>
 
@@ -2710,7 +2698,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                           onClick={() => handleReserveBook(book)}
                           className="px-3.5 py-2 rounded-xl bg-[#231710] text-[#F7F4EE] text-xs font-medium hover:bg-[#3A261A]"
                         >
-                          Reserve
+                          {!user ? 'Login to Reserve' : 'Reserve'}
                         </button>
                       </div>
                     </div>
@@ -3016,7 +3004,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                         />
                         <button
                           onClick={() => handleToggleSaved(book.id)}
-                          title="Save to Reading List"
+                          title={isSaved ? "Added to List" : "Add to List"}
                           className={`absolute top-3 right-3 p-2 rounded-full transition-colors ${
                             isSaved
                               ? 'bg-[#234233] text-[#F7F4EE]'
@@ -3072,7 +3060,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                         onClick={() => handleReserveBook(book)}
                         className="flex-1 py-2 px-4 rounded-xl bg-[#231710] hover:bg-[#3A261A] text-[#F7F4EE] text-xs font-medium text-center transition-colors"
                       >
-                        {isAvail ? 'Reserve Volume' : 'Join Waitlist'}
+                        {isAvail ? (!user ? 'Login to Reserve' : 'Reserve Book') : 'Join Waitlist'}
                       </button>
                     </div>
                   </article>
@@ -3174,17 +3162,17 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
           <div className="arch-glass rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
               <span className="font-mono-code text-xs uppercase tracking-widest text-[#9B783E]">
-                Personal Scholar Dashboard
+                Personal Member Dashboard
               </span>
               <h1 className="font-editorial text-4xl font-semibold text-[#231710] mt-1">
                 {user ? `${user.name}’s Library` : 'My Library & Reading List'}
               </h1>
               <p className="text-sm text-[#6E5A4F] mt-1">
                 {user
-                  ? `${user.role === 'admin' ? 'Chief Librarian' : 'Archival Fellow'} • Card ID: ${
+                  ? `${user.role === 'admin' ? 'Library / Admin' : 'Member'} • Card ID: ${
                       user.membershipId || user.email
                     }`
-                  : 'Sign in with our one-click Demo Scholar Account to issue pickup tickets and sync across devices.'}
+                  : 'Sign in with our one-click Member Account to issue pickup tickets and sync across devices.'}
               </p>
             </div>
 
@@ -3201,7 +3189,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                 <button
                   onClick={async () => {
                     await logout();
-                    triggerToast('Signed out of Scholar Account');
+                    triggerToast('Signed out of Member Account');
                   }}
                   className="px-4 py-2.5 rounded-xl border border-[#C5A368]/50 text-xs font-medium text-[#3A261A] hover:bg-[#EFECE6] flex items-center gap-2"
                 >
@@ -3218,7 +3206,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                 className="px-6 py-3 rounded-xl bg-[#231710] text-[#F7F4EE] text-xs font-medium flex items-center gap-2"
               >
                 <User className="w-4 h-4 text-[#C5A368]" />
-                <span>Sign In / Activate Demo Scholar Card</span>
+                <span>Sign In / Activate Member Card</span>
               </button>
             )}
           </div>
@@ -3227,7 +3215,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-editorial text-3xl font-semibold text-[#231710]">
-                Active Volume Reservations & Pickup Tickets ({userBorrowings.length})
+                Reserved Books ({userBorrowings.length})
               </h2>
               {user && (
                 <span className="font-mono-code text-xs text-[#234233]">
@@ -3364,7 +3352,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
           {/* Saved Personal Reading List */}
           <div className="space-y-4">
             <h2 className="font-editorial text-3xl font-semibold text-[#231710]">
-              Curated Personal Reading List ({savedBookIds.length})
+              My Reading List ({savedBookIds.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {formattedBooks
@@ -3388,7 +3376,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                         onClick={() => setInspectedBook(book)}
                         className="text-xs font-medium text-[#231710] hover:underline"
                       >
-                        Inspect Volume
+                        View Details
                       </button>
                       <button
                         onClick={() => handleToggleSaved(book.id)}
@@ -3487,7 +3475,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
                         onClick={() => handleReserveBook(book)}
                         className="px-3.5 py-1.5 rounded-xl bg-[#231710] text-[#F7F4EE] text-xs font-medium hover:bg-[#3A261A]"
                       >
-                        Reserve
+                        {!user ? 'Login to Reserve' : 'Reserve'}
                       </button>
                     </div>
                   </div>
@@ -3505,7 +3493,7 @@ export default function AuraLibMain({ initialTab = 'journey', openAuth = null, o
         <section className="relative z-20 pt-28 pb-24 px-4 sm:px-8 max-w-5xl mx-auto space-y-10 animate-fadeIn">
           <div className="arch-glass rounded-3xl p-8 sm:p-12 space-y-6">
             <span className="font-mono-code text-xs uppercase tracking-widest text-[#9B783E]">
-              Architectural Manifesto • Colombo, Sri Lanka
+              About Us • Colombo, Sri Lanka
             </span>
             <h1 className="font-editorial text-4xl sm:text-6xl font-semibold text-[#231710] leading-tight">
               Where Tropical Modernism meets epistemic clarity.

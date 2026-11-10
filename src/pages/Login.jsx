@@ -49,7 +49,7 @@ export const Login = () => {
     setSubmitting(true);
     try {
       const profile = await login({ email, password });
-      showToast(`Signed in successfully as ${profile.role === 'admin' ? 'Librarian/Admin' : 'Member'}!`, 'success');
+      showToast(`Signed in successfully as ${profile.role === 'admin' ? 'Library / Admin' : 'Member'}!`, 'success');
       navigate(location.state?.from || (profile.role === 'admin' ? '/admin' : '/my-books'));
     } catch (error) {
       showToast(error.message || 'Unable to sign in.', 'error');
@@ -67,7 +67,7 @@ export const Login = () => {
             className="w-14 h-14 rounded-2xl object-contain bg-white mx-auto shadow-md border border-slate-100 p-1"
           />
           <h1 className="text-2xl font-extrabold text-navy-950 tracking-tight">
-            {isAdminRequested ? 'Librarian & Admin Portal Sign In' : 'Sign In to AuraLib LK'}
+            {isAdminRequested ? 'Library / Admin Portal Sign In' : 'Sign In to AuraLib LK'}
           </h1>
           <p className="text-xs text-slate-500">
             {isAdminRequested
@@ -83,7 +83,7 @@ export const Login = () => {
             <div>
               <p className="font-bold">Staff Authentication Required</p>
               <p className="text-[11px] text-amber-700">
-                You must sign in as an Administrator/Librarian to view the Admin Dashboard.
+                You must sign in as an Library / Admin to view the Admin Dashboard.
               </p>
             </div>
           </div>
@@ -125,7 +125,7 @@ export const Login = () => {
                     : 'text-slate-600 hover:text-navy-900'
                 }`}
               >
-                Librarian / Admin
+                Library / Admin
               </button>
             </div>
           </div>

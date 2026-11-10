@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, Bell, User, ExternalLink, LogOut, ChevronDown } from 'lucide-react';
+import logoImg from '../../assets/logo.jpg';
 import { useAuth } from '../../context/AuthContext';
 import { useLibrary } from '../../context/LibraryContext';
 
@@ -22,6 +23,11 @@ export const AdminTopNav = ({ onMobileMenuOpen, title = "Admin Dashboard" }) => 
         >
           <Menu className="w-5 h-5" />
         </button>
+        <img
+          src={logoImg}
+          alt="AuraLib LK Logo"
+          className="lg:hidden w-8 h-8 rounded-lg object-contain bg-white border border-sky-200 p-0.5 shadow-xs shrink-0"
+        />
         <div>
           <h1 className="text-base sm:text-lg font-extrabold text-navy-900 tracking-tight">
             {title}

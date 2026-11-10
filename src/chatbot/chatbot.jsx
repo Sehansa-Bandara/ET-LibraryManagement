@@ -1,3 +1,4 @@
+import logoImg from '../assets/logo.jpg';
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -265,9 +266,11 @@ export const FloatingChatbot = () => {
           {/* Header */}
           <div className="bg-gradient-to-r from-[#0F172A] via-[#0F172A] to-[#6366F1] text-white px-4 py-3.5 flex items-center justify-between shadow-md">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#6366F1] flex items-center justify-center text-white shadow-md shadow-[#6366F1]/30">
-                <Bot className="w-5 h-5" />
-              </div>
+              <img
+                src={logoImg}
+                alt="AuraLib LK Logo"
+                className="w-9 h-9 rounded-2xl object-contain bg-white border border-indigo-200/50 p-0.5 shadow-md shadow-[#6366F1]/30 shrink-0"
+              />
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-bold tracking-tight text-white">AI Reading Assistant</h3>
@@ -316,9 +319,11 @@ export const FloatingChatbot = () => {
                 className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'bot' && (
-                  <div className="w-7 h-7 rounded-xl bg-[#6366F1] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                    <Bot className="w-4 h-4" />
-                  </div>
+                  <img
+                    src={logoImg}
+                    alt="AuraLib AI"
+                    className="w-7 h-7 rounded-xl object-contain bg-white border border-slate-200 p-0.5 shadow-xs shrink-0 mt-0.5"
+                  />
                 )}
 
                 <div
@@ -360,9 +365,11 @@ export const FloatingChatbot = () => {
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex gap-2.5 justify-start">
-                <div className="w-7 h-7 rounded-xl bg-[#6366F1] text-white flex items-center justify-center shrink-0 shadow-xs">
-                  <Bot className="w-4 h-4" />
-                </div>
+                <img
+                  src={logoImg}
+                  alt="AuraLib AI Typing"
+                  className="w-7 h-7 rounded-xl object-contain bg-white border border-slate-200 p-0.5 shadow-xs shrink-0"
+                />
                 <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-xs px-3.5 py-2.5 shadow-2xs flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-[#6366F1] rounded-full animate-bounce [animation-delay:-0.3s]" />
                   <span className="w-1.5 h-1.5 bg-[#6366F1] rounded-full animate-bounce [animation-delay:-0.15s]" />
@@ -443,7 +450,11 @@ export const FloatingChatbot = () => {
             <X className="w-6 h-6 transition-transform duration-200 group-hover:rotate-90" />
           ) : (
             <>
-              <Bot className="w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
+              <img
+                src={logoImg}
+                alt="AuraLib Assistant"
+                className="w-7 h-7 rounded-full object-contain bg-white p-0.5 transition-transform duration-200 group-hover:scale-110 shadow-xs"
+              />
               <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#6366F1] border-2 border-white" />

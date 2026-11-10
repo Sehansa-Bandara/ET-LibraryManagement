@@ -5,7 +5,7 @@ export const DEMO_ADMIN = {
   role: "admin",
   membershipId: "AL-ADMIN-01",
   avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200",
-  title: "Chief Librarian & Systems Director",
+  title: "Library / Admin & Systems Director",
   department: "AuraLib National Smart Library, Colombo 07",
   phone: "+94 (11) 268-6142",
   joinedDate: "2021-03-15",

@@ -27,7 +27,7 @@ export const AdminSettings = () => {
   // Form states
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
-    title: user?.title || 'Chief Librarian',
+    title: user?.title || 'Library / Admin',
     email: user?.email || '',
     department: user?.department || 'AuraLib National Smart Library',
     phone: user?.phone || ''
